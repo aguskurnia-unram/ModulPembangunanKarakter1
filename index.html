@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manazil al-Istiqamah — Modul Interaktif Pengembangan Karakter Islami</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --parchment:#F4EEE0;
+    --parchment-deep:#EAE0CC;
+    --card:#FBF7EE;
+    --ink:#16223D;
+    --lapis:#2C4A7E;
+    --lapis-soft:#5C7BB0;
+    --gold:#A9761A;
+    --gold-bright:#CF9E3E;
+    --teal:#2A5E54;
+    --muted:#7A7363;
+    --line:rgba(22,34,61,0.12);
+    --line-strong:rgba(22,34,61,0.22);
+    --shadow:0 1px 2px rgba(22,34,61,.06), 0 8px 28px -12px rgba(22,34,61,.22);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:"Inter",system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 100% -10%, rgba(207,158,62,.10), transparent 60%),
+      radial-gradient(1000px 500px at -10% 110%, rgba(44,74,126,.08), transparent 55%),
+      var(--parchment);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .arabic{font-family:"Amiri",serif;direction:rtl;line-height:1.9}
+  h1,h2,h3,.display{font-family:"Amiri",serif;font-weight:700;letter-spacing:.2px}
+
+  /* ---------- Top bar ---------- */
+  header.top{
+    position:sticky;top:0;z-index:40;
+    background:rgba(244,238,224,.86);
+    backdrop-filter:saturate(140%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .top-inner{max-width:1080px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .mark{display:flex;align-items:center;gap:12px;min-width:0}
+  .seal{
+    width:44px;height:44px;flex:0 0 auto;border-radius:50%;
+    background:radial-gradient(circle at 30% 25%, var(--gold-bright), var(--gold) 70%);
+    color:var(--parchment);display:grid;place-items:center;font-family:"Amiri",serif;font-size:22px;font-weight:700;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.35), var(--shadow);
+  }
+  .mark .ttl{font-family:"Amiri",serif;font-weight:700;font-size:1.05rem;line-height:1.1}
+  .mark .sub{font-size:.72rem;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
+  .top-actions{margin-left:auto;display:flex;gap:8px}
+  .btn{
+    font:inherit;font-weight:600;font-size:.85rem;cursor:pointer;border:1px solid var(--line-strong);
+    background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;transition:.18s;
+  }
+  .btn:hover{border-color:var(--gold);color:var(--gold)}
+  .btn.primary{background:var(--lapis);color:#fff;border-color:var(--lapis)}
+  .btn.primary:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+  .btn:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--gold-bright);outline-offset:2px}
+
+  /* ---------- Stepper nav ---------- */
+  nav.stepper{max-width:1080px;margin:0 auto;padding:10px 22px 0;display:flex;gap:6px;overflow-x:auto}
+  nav.stepper button{
+    flex:0 0 auto;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;background:none;border:none;
+    color:var(--muted);padding:10px 12px;border-bottom:3px solid transparent;display:flex;gap:8px;align-items:center;
+    white-space:nowrap;transition:.15s;border-radius:6px 6px 0 0;
+  }
+  nav.stepper button .n{
+    width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;font-size:.7rem;
+  }
+  nav.stepper button[aria-current="true"]{color:var(--ink);border-bottom-color:var(--gold)}
+  nav.stepper button[aria-current="true"] .n{background:var(--gold);border-color:var(--gold);color:#fff}
+  nav.stepper button.done .n{background:var(--teal);border-color:var(--teal);color:#fff}
+
+  /* ---------- Layout ---------- */
+  main{max-width:1080px;margin:0 auto;padding:26px 22px 90px}
+  .panel{display:none;animation:fade .4s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .eyebrow{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .lede{font-size:1.05rem;color:#2c3a52;max-width:62ch}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px}
+  .grid{display:grid;gap:16px}
+  .small{font-size:.85rem;color:var(--muted)}
+  .pill{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:var(--parchment-deep);color:var(--ink)}
+
+  /* ---------- Hero (Pengantar) ---------- */
+  .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:center}
+  .hero h1{font-size:clamp(1.9rem,4vw,3rem);line-height:1.05;margin:.3rem 0 .6rem}
+  .hero .ayah{margin-top:18px;border-left:3px solid var(--gold);padding:6px 16px;background:rgba(207,158,62,.07)}
+  .hero .ayah .arabic{font-size:1.5rem;color:var(--ink)}
+  .hero .ayah .tr{font-size:.85rem;color:var(--muted);font-style:italic}
+
+  /* ---------- Staircase ---------- */
+  .stairs{display:flex;flex-direction:column-reverse;gap:0;margin:6px 0 2px}
+  .stair{
+    display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);position:relative;transition:.25s;
+  }
+  .stair + .stair{margin-bottom:8px}
+  .stairs .stair:nth-child(1){margin-left:0}
+  .stairs .stair:nth-child(2){margin-left:34px}
+  .stairs .stair:nth-child(3){margin-left:68px}
+  .stairs .stair:nth-child(4){margin-left:102px}
+  .stairs .stair:nth-child(5){margin-left:136px}
+  .stairs .stair:nth-child(6){margin-left:170px;background:linear-gradient(120deg,var(--gold) 0%,var(--gold-bright) 100%);border-color:var(--gold);color:#fff}
+  .stair .badge{width:30px;height:30px;flex:0 0 auto;border-radius:8px;background:var(--lapis);color:#fff;display:grid;place-items:center;font-family:"Amiri",serif;font-weight:700}
+  .stairs .stair:nth-child(6) .badge{background:rgba(255,255,255,.25)}
+  .stair .nm{font-family:"Amiri",serif;font-weight:700;font-size:1.02rem}
+  .stair .ar{font-family:"Amiri",serif;color:var(--muted);font-size:.95rem;margin-left:auto}
+  .stairs .stair:nth-child(6) .ar{color:rgba(255,255,255,.85)}
+  @media(max-width:620px){
+    .stairs .stair{margin-left:0!important}
+    .stair .ar{display:none}
+  }
+
+  /* ---------- Stage cards ---------- */
+  .stage-grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .stage{border-top:4px solid var(--lapis);cursor:default}
+  .stage[data-k="1"]{border-top-color:#3a6ea5}
+  .stage[data-k="2"]{border-top-color:var(--teal)}
+  .stage[data-k="3"]{border-top-color:var(--gold)}
+  .stage[data-k="4"]{border-top-color:#9c5a2b}
+  .stage[data-k="5"]{border-top-color:#7a3f6e}
+  .stage h3{margin:.1rem 0 .1rem;font-size:1.15rem}
+  .stage .ar{font-family:"Amiri",serif;color:var(--lapis);font-size:1.25rem}
+  .stage details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .stage summary{cursor:pointer;font-weight:600;font-size:.85rem;color:var(--gold);list-style:none}
+  .stage summary::-webkit-details-marker{display:none}
+  .stage summary::before{content:"▸ ";color:var(--gold)}
+  .stage details[open] summary::before{content:"▾ "}
+  .dalil{font-size:.85rem;background:rgba(44,74,126,.05);border-radius:8px;padding:8px 12px;margin-top:8px}
+  .dalil .arabic{font-size:1.15rem}
+
+  /* ---------- Assessment ---------- */
+  .q{padding:16px 0;border-bottom:1px solid var(--line)}
+  .q:last-child{border-bottom:none}
+  .q .txt{font-weight:500;margin-bottom:10px}
+  .q .txt b{color:var(--gold);font-weight:700;font-size:.8rem;margin-right:6px}
+  .likert{display:flex;gap:6px;flex-wrap:wrap}
+  .likert label{flex:1;min-width:64px;text-align:center;border:1px solid var(--line-strong);border-radius:10px;padding:9px 4px;cursor:pointer;font-size:.78rem;color:var(--muted);transition:.15s;background:var(--card)}
+  .likert label span{display:block;font-family:"Amiri",serif;font-size:1.1rem;font-weight:700;color:var(--ink)}
+  .likert input{position:absolute;opacity:0;width:0;height:0}
+  .likert input:checked + label{background:var(--lapis);border-color:var(--lapis);color:#fff}
+  .likert input:checked + label span{color:#fff}
+  .likert input:focus-visible + label{outline:3px solid var(--gold-bright);outline-offset:2px}
+
+  /* ---------- Results ---------- */
+  .result-head{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+  .score-ring{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--gold) 0deg,var(--parchment-deep) 0deg);position:relative}
+  .score-ring::after{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--card)}
+  .score-ring .v{position:relative;text-align:center}
+  .score-ring .v b{font-family:"Amiri",serif;font-size:1.9rem;display:block;line-height:1}
+  .bars{display:grid;gap:10px;margin-top:6px}
+  .bar-row{display:grid;grid-template-columns:130px 1fr 46px;gap:10px;align-items:center;font-size:.84rem}
+  .bar-track{height:14px;border-radius:999px;background:var(--parchment-deep);overflow:hidden}
+  .bar-fill{height:100%;border-radius:999px;width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+  .badge-level{font-family:"Amiri",serif;font-size:1.3rem;font-weight:700;color:var(--teal)}
+
+  /* ---------- Recommendation cards ---------- */
+  .rec{border-left:4px solid var(--gold);background:var(--card)}
+  .rec h3{margin:.1rem 0 .4rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .rec .focus{background:#fbe9c9;color:#7a531a;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.04em;text-transform:uppercase}
+  .rec ul{margin:.4rem 0 0;padding-left:1.1rem}
+  .rec ul li{margin:.25rem 0}
+  .muhasabah{background:rgba(44,74,126,.06);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:.9rem}
+  .muhasabah em{color:var(--lapis);font-style:italic}
+
+  /* ---------- Implementation ---------- */
+  .opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin:8px 0;cursor:pointer;transition:.15s;background:var(--card)}
+  .opt:hover{border-color:var(--gold)}
+  .opt input{margin-top:4px;accent-color:var(--lapis);width:18px;height:18px}
+  .opt .ot{font-size:.9rem}
+  .opt .ot small{display:block;color:var(--muted)}
+  .field{display:block;margin:14px 0}
+  .field label{display:block;font-weight:600;font-size:.85rem;margin-bottom:5px}
+  .field input,.field select,.field textarea{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--card);color:var(--ink)}
+  .field textarea{min-height:70px;resize:vertical}
+
+  /* Commitment card */
+  .commit-card{background:linear-gradient(135deg,#1b2d50,#2c4a7e);color:#f4eee0;border-radius:16px;padding:26px;position:relative;overflow:hidden;border:1px solid var(--lapis)}
+  .commit-card::before{content:"۞";position:absolute;font-family:"Amiri",serif;font-size:9rem;color:rgba(207,158,62,.14);right:-10px;top:-30px}
+  .commit-card h3{color:#fff;font-size:1.5rem;margin:.2rem 0}
+  .commit-card .lbl{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-bright);font-weight:700}
+  .commit-card ul{margin:.4rem 0 0;padding-left:1.1rem}
+  .commit-card .sign{margin-top:18px;border-top:1px solid rgba(255,255,255,.2);padding-top:12px;font-size:.85rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  /* ---------- Tracker ---------- */
+  .track-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .streak{font-family:"Amiri",serif;font-size:1.1rem}
+  .streak b{color:var(--teal);font-size:1.6rem}
+  .habit-row{margin:14px 0;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .habit-row .hn{font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .habit-row .pct{font-family:"Amiri",serif;color:var(--teal);font-weight:700}
+  .days{display:grid;grid-template-columns:repeat(15,1fr);gap:5px}
+  @media(max-width:560px){.days{grid-template-columns:repeat(10,1fr)}}
+  .day{aspect-ratio:1;border-radius:6px;border:1px solid var(--line-strong);background:var(--card);font-size:.62rem;color:var(--muted);cursor:pointer;display:grid;place-items:center;transition:.12s;padding:0}
+  .day:hover{border-color:var(--gold)}
+  .day.on{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700}
+
+  .nav-foot{display:flex;justify-content:space-between;gap:12px;margin-top:28px}
+  .note{font-size:.8rem;color:var(--muted);background:rgba(44,74,126,.05);border-radius:10px;padding:12px 14px;border:1px dashed var(--line-strong)}
+  footer{max-width:1080px;margin:0 auto;padding:0 22px 50px;color:var(--muted);font-size:.78rem;text-align:center}
+
+  @media(max-width:760px){.hero{grid-template-columns:1fr}.result-head{grid-template-columns:1fr;justify-items:center;text-align:center}.bar-row{grid-template-columns:96px 1fr 40px}}
+
+  @media print{
+    header.top,nav.stepper,.top-actions,.nav-foot,.btn,.note{display:none!important}
+    .panel{display:block!important;page-break-after:always}
+    body{background:#fff}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="mark">
+      <div class="seal">ا</div>
+      <div>
+        <div class="ttl">Manāzil al-Istiqāmah</div>
+        <div class="sub">Modul Karakter Islami · MKWK Agama Islam</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn" onclick="window.print()">Cetak / Simpan PDF</button>
+      <button class="btn" onclick="resetAll()">Mulai Ulang</button>
+    </div>
+  </div>
+  <nav class="stepper" id="stepper" aria-label="Tahapan modul"></nav>
+</header>
+
+<main>
+
+  <!-- ============ 0. PENGANTAR ============ -->
+  <section class="panel active" id="p0" aria-labelledby="t0">
+    <div class="hero">
+      <div>
+        <span class="eyebrow">Pembelajaran Interaktif · Tazkiyatun Nafs</span>
+        <h1 id="t0">Membangun Karakter Islami<br>Menuju Istiqamah</h1>
+        <p class="lede">Modul ini menuntun Anda menapaki lima maqam pembinaan diri — dari komitmen hingga kesungguhan — lalu menganalisis kondisi diri, menerima rekomendasi evaluasi, menyusun rencana implementasi, dan menjaga konsistensi hingga karakter menjadi <em>akhlāq</em> yang mengakar.</p>
+        <div class="ayah">
+          <div class="arabic">إِنَّ الَّذِينَ قَالُوا رَبُّنَا اللَّهُ ثُمَّ اسْتَقَامُوا</div>
+          <div class="tr">"Sesungguhnya orang-orang yang berkata, 'Tuhan kami Allah,' kemudian mereka beristikamah…" (QS Fuṣṣilat: 30)</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="pill">Capaian Pembelajaran (CPMK)</span>
+        <ul style="padding-left:1.1rem;margin:.8rem 0 0">
+          <li>Menjelaskan kerangka pembentukan karakter Islami melalui tazkiyatun nafs.</li>
+          <li>Menganalisis kondisi pengembangan karakter diri secara reflektif (<em>muhasabah</em>).</li>
+          <li>Merumuskan rekomendasi evaluasi atas kelemahan karakter.</li>
+          <li>Menyusun rencana implementasi amal yang terukur.</li>
+          <li>Membangun mekanisme menjaga istiqamah dan konsistensi.</li>
+        </ul>
+        <div class="note" style="margin-top:14px">Alur: <b>Pahami → Analisis Diri → Rekomendasi → Implementasi → Istiqamah.</b> Jawaban Anda hanya tersimpan di perangkat selama sesi ini; gunakan tombol <b>Cetak/Simpan PDF</b> untuk menyimpan hasil.</div>
+        <button class="btn primary" style="margin-top:16px;width:100%" onclick="go(1)">Mulai Modul →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 1. KERANGKA ============ -->
+  <section class="panel" id="p1" aria-labelledby="t1">
+    <span class="eyebrow">Tahap 1 · Kerangka Konsep</span>
+    <h2 id="t1" style="font-size:1.7rem;margin:.2rem 0 .3rem">Lima Maqam Menuju Istiqamah</h2>
+    <p class="lede">Karakter Islami tidak terbentuk sekali jadi. Ia menapaki tangga: berkomitmen, sadar diawasi Allah, mengevaluasi diri, mengoreksi kelalaian, lalu bersungguh-sungguh — hingga seluruhnya menyatu menjadi istiqamah.</p>
+
+    <div class="card" style="margin:20px 0">
+      <span class="pill">Tangga Istiqamah</span>
+      <div class="stairs" id="stairs" style="margin-top:16px"></div>
+    </div>
+
+    <div class="grid stage-grid" id="stageGrid"></div>
+
+    <div class="nav-foot">
+      <button class="btn" onclick="go(0)">← Pengantar</button>
+      <button class="btn primary" onclick="go(2)">Lanjut: Analisis Diri →</button>
+    </div>
+  </section>
+
+  <!-- ============ 2. ANALISIS DIRI ============ -->
+  <section class="panel" id="p2" aria-labelledby="t2">
+    <span class="eyebrow">Tahap 2 · Analisis Diri (Self-Assessment)</span>
+    <h2 id="t2" style="font-size:1.7rem;margin:.2rem 0 .3rem">Memetakan Karakter Diri</h2>
+    <p class="lede">Nilai sejujurnya setiap pernyataan berikut. Tidak ada jawaban benar atau salah — ini adalah <em>muhasabah</em>, bukan ujian. Skala: 1 (tidak pernah) hingga 5 (selalu).</p>
+
+    <div class="card" style="margin-top:18px">
+      <div id="questions"></div>
+    </div>
+    <div class="nav-foot">
+      <button class="btn" onclick="go(1)">← Kerangka</button>
+      <button class="btn primary" id="analyzeBtn" onclick="analyze()">Analisis Hasil Saya →</button>
+    </div>
+  </section>
+
+  <!-- ============ 3. REKOMENDASI ============ -->
+  <section class="panel" id="p3" aria-labelledby="t3">
+    <span class="eyebrow">Tahap 3 · Rekomendasi Evaluasi</span>
+    <h2 id="t3" style="font-size:1.7rem;margin:.2rem 0 .3rem">Profil & Arah Perbaikan</h2>
+
+    <div class="card" style="margin-top:8px">
+      <div class="result-head">
+        <div class="score-ring" id="ring"><div class="v"><b id="ringVal">0%</b><span class="small">indeks</span></div></div>
+        <div>
+          <div class="small">Tingkat pengembangan karakter Anda saat ini</div>
+          <div class="badge-level" id="levelName">—</div>
+          <p class="small" id="levelDesc" style="margin:.4rem 0 0"></p>
+        </div>
+      </div>
+      <div class="bars" id="bars" style="margin-top:20px"></div>
+    </div>
+
+    <h3 style="margin:26px 0 6px;font-size:1.25rem">Rekomendasi berdasarkan area terlemah</h3>
+    <p class="small" style="margin-top:0">Disusun dari maqam dengan skor terendah. Setiap rekomendasi memuat langkah evaluasi (muhasabah) dan amal yang dianjurkan.</p>
+    <div class="grid" id="recs" style="margin-top:12px"></div>
+
+    <div class="nav-foot">
+      <button class="btn" onclick="go(2)">← Ulangi Analisis</button>
+      <button class="btn primary" onclick="go(4)">Lanjut: Implementasi →</button>
+    </div>
+  </section>
+
+  <!-- ============ 4. IMPLEMENTASI ============ -->
+  <section class="panel" id="p4" aria-labelledby="t4">
+    <span class="eyebrow">Tahap 4 · Implementasi</span>
+    <h2 id="t4" style="font-size:1.7rem;margin:.2rem 0 .3rem">Menyusun Rencana Amal</h2>
+    <p class="lede">Pilih amal konkret untuk dijalankan. Pilihan diutamakan dari area karakter yang paling perlu Anda kuatkan. Komitmen yang ditulis lebih mudah dijaga.</p>
+
+    <div class="card" style="margin-top:18px">
+      <h3 style="margin:.1rem 0 .6rem;font-size:1.1rem">Pilih amal yang akan Anda komitmenkan</h3>
+      <div id="implOptions"></div>
+
+      <div class="field">
+        <label for="customAmal">Tambahkan amal pilihan Anda sendiri (opsional)</label>
+        <input id="customAmal" type="text" placeholder="cth. Sedekah subuh setiap hari" />
+      </div>
+      <div class="field">
+        <label for="freq">Target keberlangsungan</label>
+        <select id="freq">
+          <option>21 hari pertama (pembentukan kebiasaan)</option>
+          <option>40 hari (penguatan)</option>
+          <option>Harian, berkelanjutan</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="niat">Niat & alasan terdalam (li mā / karena apa)</label>
+        <textarea id="niat" placeholder="cth. Karena Allah, agar ibadahku tidak sekadar rutinitas, dan agar menjadi teladan bagi mahasiswa…"></textarea>
+      </div>
+      <div class="field">
+        <label for="nama">Nama (untuk kartu komitmen)</label>
+        <input id="nama" type="text" placeholder="Nama Anda" />
+      </div>
+      <button class="btn primary" onclick="buildCommit()">Buat Kartu Komitmen →</button>
+    </div>
+
+    <div id="commitWrap" style="margin-top:20px"></div>
+
+    <div class="nav-foot">
+      <button class="btn" onclick="go(3)">← Rekomendasi</button>
+      <button class="btn primary" onclick="go(5)">Lanjut: Jaga Istiqamah →</button>
+    </div>
+  </section>
+
+  <!-- ============ 5. ISTIQAMAH ============ -->
+  <section class="panel" id="p5" aria-labelledby="t5">
+    <span class="eyebrow">Tahap 5 · Istiqamah & Konsistensi</span>
+    <h2 id="t5" style="font-size:1.7rem;margin:.2rem 0 .3rem">Menjaga Nyala Amal</h2>
+    <div class="card" style="margin:6px 0 18px;background:rgba(207,158,62,.08);border-color:rgba(207,158,62,.4)">
+      <div class="arabic" style="font-size:1.4rem">قُلْ آمَنْتُ بِاللَّهِ ثُمَّ اسْتَقِمْ</div>
+      <div class="small">"Katakanlah, 'Aku beriman kepada Allah,' lalu beristikamahlah." (HR Muslim). Istiqamah bukan kesempurnaan, melainkan kembali tiap kali tergelincir.</div>
+    </div>
+
+    <p class="lede">Tandai hari saat Anda menjalankan amal komitmen. Lacak konsistensi Anda dan renungkan secara berkala.</p>
+
+    <div class="card" style="margin-top:18px">
+      <div class="track-head">
+        <div class="streak">Konsistensi keseluruhan: <b id="overallPct">0%</b></div>
+        <span class="small">Klik kotak hari untuk menandai amal yang tertunaikan</span>
+      </div>
+      <div id="tracker"></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3 style="margin:.1rem 0 .6rem;font-size:1.1rem">Jurnal Muhasabah Pekanan</h3>
+      <p class="small" style="margin-top:0">Tiga pertanyaan untuk merawat istiqamah:</p>
+      <div class="field"><label>1. Amal mana yang paling konsisten, dan apa yang membantunya bertahan?</label><textarea></textarea></div>
+      <div class="field"><label>2. Di titik mana saya paling sering tergelincir, dan apa pemicunya?</label><textarea></textarea></div>
+      <div class="field"><label>3. Satu perbaikan kecil untuk pekan depan (mu'aqabah & mujahadah):</label><textarea></textarea></div>
+    </div>
+
+    <div class="card" style="margin-top:18px;text-align:center;background:linear-gradient(135deg,#234a44,#2a5e54);color:#f4eee0">
+      <div class="arabic" style="font-size:1.5rem;color:#fff">أَحَبُّ الأَعْمَالِ إِلَى اللَّهِ أَدْوَمُهَا وَإِنْ قَلَّ</div>
+      <p class="small" style="color:rgba(255,255,255,.85);margin:.4rem 0 0">"Amal yang paling dicintai Allah adalah yang paling konsisten meski sedikit." (HR Bukhari–Muslim)</p>
+    </div>
+
+    <div class="nav-foot">
+      <button class="btn" onclick="go(4)">← Implementasi</button>
+      <button class="btn primary" onclick="window.print()">Selesai — Cetak Hasil</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Manāzil al-Istiqāmah · Modul interaktif untuk MKWK Pendidikan Agama Islam. Kerangka tazkiyatun nafs (al-muʿāhadah, al-murāqabah, al-muḥāsabah, al-muʿāqabah, al-mujāhadah) sebagaimana banyak dibahas dalam literatur tarbiyah Islam.
+</footer>
+
+<script>
+/* ---------------- DATA ---------------- */
+const STEPS = ["Pengantar","Kerangka","Analisis Diri","Rekomendasi","Implementasi","Istiqamah"];
+
+const STAGES = [
+  { k:1, nm:"Muʿāhadah", ar:"المعاهدة", tag:"Komitmen",
+    def:"Meneguhkan kembali perjanjian dan ikrar kepada Allah — bahwa hanya kepada-Nya kita beribadah. Karakter dimulai dari niat dan komitmen yang diperbarui.",
+    dalilAr:"وَأَوْفُوا بِعَهْدِ اللَّهِ إِذَا عَاهَدتُّمْ",
+    dalilTr:"\"Tepatilah janji kepada Allah apabila kamu berjanji.\" (QS An-Naḥl: 91)" },
+  { k:2, nm:"Murāqabah", ar:"المراقبة", tag:"Kesadaran diawasi",
+    def:"Kesadaran bahwa Allah senantiasa mengawasi — inti dari ihsan. Karakter terjaga ketika seseorang berperilaku sama baik di keramaian maupun saat sendiri.",
+    dalilAr:"أَنْ تَعْبُدَ اللَّهَ كَأَنَّكَ تَرَاهُ",
+    dalilTr:"\"…engkau menyembah Allah seakan-akan melihat-Nya.\" (HR Muslim, hadis Jibril tentang ihsan)" },
+  { k:3, nm:"Muḥāsabah", ar:"المحاسبة", tag:"Evaluasi diri",
+    def:"Mengintrospeksi amal: apa yang sudah dikerjakan, apa yang terlewat. Inilah inti analisis karakter — menimbang diri sebelum ditimbang.",
+    dalilAr:"وَلْتَنظُرْ نَفْسٌ مَّا قَدَّمَتْ لِغَدٍ",
+    dalilTr:"\"Hendaklah setiap diri memperhatikan apa yang telah diperbuatnya untuk hari esok.\" (QS Al-Ḥasyr: 18)" },
+  { k:4, nm:"Muʿāqabah", ar:"المعاقبة", tag:"Koreksi diri",
+    def:"Menegur dan mendisiplinkan diri saat lalai — dengan menambah kebaikan, bukan menyiksa diri. Jiwa yang menyesali kesalahannya (an-nafs al-lawwāmah).",
+    dalilAr:"وَلَا أُقْسِمُ بِالنَّفْسِ اللَّوَّامَةِ",
+    dalilTr:"\"Aku bersumpah dengan jiwa yang menyesali (dirinya).\" (QS Al-Qiyāmah: 2)" },
+  { k:5, nm:"Mujāhadah", ar:"المجاهدة", tag:"Kesungguhan",
+    def:"Bersungguh-sungguh melawan hawa nafsu dan rasa malas secara terus-menerus. Tanpa mujahadah, niat baik berhenti sebagai wacana.",
+    dalilAr:"وَالَّذِينَ جَاهَدُوا فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا",
+    dalilTr:"\"Orang-orang yang bersungguh-sungguh di jalan Kami, pasti Kami tunjukkan jalan-jalan Kami.\" (QS Al-ʿAnkabūt: 69)" },
+];
+
+const QUESTIONS = [
+  {k:1,t:"Saya memperbarui niat dan ikrar untuk taat kepada Allah setiap hari."},
+  {k:1,t:"Saya merasa terikat pada komitmen ibadah yang telah saya tetapkan."},
+  {k:1,t:"Saat membaca \"iyyāka naʿbudu\", saya menyadarinya sebagai sebuah janji."},
+  {k:2,t:"Saya merasa diawasi Allah meskipun sedang sendirian."},
+  {k:2,t:"Kesadaran akan pengawasan Allah memengaruhi keputusan saya sehari-hari."},
+  {k:2,t:"Saya menjaga perilaku di tempat tersembunyi sebagaimana di tempat ramai."},
+  {k:3,t:"Saya meluangkan waktu mengevaluasi amal saya setiap hari."},
+  {k:3,t:"Saya merenungkan kekurangan dan kelebihan diri secara berkala."},
+  {k:3,t:"Saya menyadari pola kesalahan yang berulang dalam diri saya."},
+  {k:4,t:"Ketika lalai dari kewajiban, saya menegur dan mengoreksi diri."},
+  {k:4,t:"Saya mengganti kelalaian dengan amal kebaikan tambahan."},
+  {k:4,t:"Saya tidak membiarkan kesalahan berulang tanpa konsekuensi yang saya tetapkan."},
+  {k:5,t:"Saya bersungguh-sungguh melawan keinginan bermalas-malasan dalam ibadah."},
+  {k:5,t:"Saya terus berusaha meningkatkan kualitas ibadah meski terasa berat."},
+  {k:5,t:"Saya istiqamah menjalankan kebaikan walau tidak ada yang melihat."},
+];
+
+const REC = {
+  1:{ focus:"Perkuat Komitmen (Muʿāhadah)",
+      muhasabah:"Apakah niat ibadah saya hanya muncul saat bersemangat? Apa janji utama yang ingin saya tegakkan di hadapan Allah?",
+      steps:["Tulis 'kontrak ruhani' harian: satu janji kecil yang pasti ditunaikan.",
+             "Perbarui niat tiap selesai salat dengan kalimat 'iyyāka naʿbudu'.",
+             "Tetapkan ibadah inti (mis. salat awal waktu) sebagai komitmen non-negosiasi."]},
+  2:{ focus:"Tumbuhkan Kesadaran Diawasi (Murāqabah)",
+      muhasabah:"Apakah perilaku saya berubah saat sendirian? Di ruang mana saya paling lengah dari pengawasan Allah?",
+      steps:["Latih kalimat 'Allāhu yarānī' (Allah melihatku) sebelum melakukan sesuatu yang ragu.",
+             "Pilih satu kebiasaan privat untuk diperbaiki pekan ini.",
+             "Mulai dan akhiri hari dengan dzikir kesadaran (muraqabah pagi–petang)."]},
+  3:{ focus:"Biasakan Evaluasi Diri (Muḥāsabah)",
+      muhasabah:"Kapan terakhir saya menimbang amal saya secara jujur? Apa satu pola kesalahan yang belum saya akui?",
+      steps:["Sisihkan 5 menit sebelum tidur untuk menimbang amal hari itu.",
+             "Catat satu kebaikan & satu kekurangan setiap malam.",
+             "Tinjau catatan tiap pekan untuk mengenali pola."]},
+  4:{ focus:"Latih Koreksi Diri (Muʿāqabah)",
+      muhasabah:"Apa yang saya lakukan saat melalaikan kewajiban — membiarkannya, atau memperbaikinya? Apakah saya bersikap adil pada diri sendiri?",
+      steps:["Tetapkan 'kaffarah' positif: tiap lalai diganti satu amal baik (mis. sedekah/istighfar 100x).",
+             "Hindari menyiksa diri; fokus pada perbaikan, bukan rasa bersalah berlebihan.",
+             "Buat aturan konsekuensi yang manusiawi dan terukur."]},
+  5:{ focus:"Tingkatkan Kesungguhan (Mujāhadah)",
+      muhasabah:"Pada amal mana saya menyerah saat terasa berat? Apa godaan terbesar yang membuat saya berhenti?",
+      steps:["Mulai dari amal kecil yang konsisten, lalu naikkan bertahap.",
+             "Lawan rasa malas dengan aturan '2 menit pertama': mulai dulu, sisanya menyusul.",
+             "Cari lingkungan/teman yang menguatkan (biʾah ṣāliḥah)."]},
+};
+
+const IMPL_OPTIONS = {
+  1:["Memperbarui niat & ikrar harian sesudah salat","Menetapkan satu ibadah inti non-negosiasi"],
+  2:["Dzikir muraqabah pagi & petang","Memperbaiki satu kebiasaan saat sendirian"],
+  3:["Muhasabah 5 menit sebelum tidur","Mencatat 1 kebaikan & 1 kekurangan tiap malam"],
+  4:["Mengganti kelalaian dengan amal pengganti (istighfar/sedekah)","Menetapkan konsekuensi positif yang terukur"],
+  5:["Tilawah Al-Qur'an terjadwal harian","Salat sunnah rawatib/tahajud bertahap","Bergabung dengan lingkungan yang menguatkan"],
+};
+
+/* ---------------- STATE ---------------- */
+const state = { current:0, answers:{}, scores:{}, weak:[], commits:[], tracker:{} };
+
+/* ---------------- RENDER: stepper ---------------- */
+function renderStepper(){
+  const el=document.getElementById('stepper'); el.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.innerHTML=`<span class="n">${i}</span>${s}`;
+    b.onclick=()=>go(i);
+    if(i===state.current)b.setAttribute('aria-current','true');
+    el.appendChild(b);
+  });
+}
+function go(i){
+  state.current=i;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('p'+i).classList.add('active');
+  renderStepper();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------------- RENDER: stairs + stages ---------------- */
+function renderStairs(){
+  const el=document.getElementById('stairs'); el.innerHTML='';
+  STAGES.forEach(s=>{
+    el.insertAdjacentHTML('beforeend',
+      `<div class="stair"><span class="badge">${s.k}</span><span class="nm">${s.nm}</span><span class="ar">${s.ar}</span></div>`);
+  });
+  el.insertAdjacentHTML('beforeend',
+    `<div class="stair"><span class="badge">★</span><span class="nm">Istiqāmah</span><span class="ar">الاستقامة</span></div>`);
+}
+function renderStages(){
+  const el=document.getElementById('stageGrid'); el.innerHTML='';
+  STAGES.forEach(s=>{
+    el.insertAdjacentHTML('beforeend',`
+      <div class="card stage" data-k="${s.k}">
+        <span class="pill">${s.k}. ${s.tag}</span>
+        <h3>${s.nm} <span class="ar">${s.ar}</span></h3>
+        <p class="small" style="color:#3a4660">${s.def}</p>
+        <details><summary>Landasan</summary>
+          <div class="dalil"><div class="arabic">${s.dalilAr}</div><div class="small" style="margin-top:4px">${s.dalilTr}</div></div>
+        </details>
+      </div>`);
+  });
+}
+
+/* ---------------- RENDER: questions ---------------- */
+function renderQuestions(){
+  const el=document.getElementById('questions'); el.innerHTML='';
+  const labels=["1","2","3","4","5"];
+  QUESTIONS.forEach((q,i)=>{
+    const stage=STAGES.find(s=>s.k===q.k);
+    let opts='';
+    labels.forEach(v=>{
+      opts+=`<input type="radio" id="q${i}_${v}" name="q${i}" value="${v}" onchange="state.answers[${i}]=${v}">
+             <label for="q${i}_${v}"><span>${v}</span></label>`;
+    });
+    el.insertAdjacentHTML('beforeend',`
+      <div class="q">
+        <div class="txt"><b>${stage.nm}</b>${q.t}</div>
+        <div class="likert">${opts}</div>
+      </div>`);
+  });
+}
+
+/* ---------------- ANALYZE ---------------- */
+function analyze(){
+  if(Object.keys(state.answers).length<QUESTIONS.length){
+    alert("Mohon nilai seluruh pernyataan terlebih dahulu agar analisis akurat.");
+    return;
+  }
+  const sum={1:0,2:0,3:0,4:0,5:0}, cnt={1:0,2:0,3:0,4:0,5:0};
+  QUESTIONS.forEach((q,i)=>{sum[q.k]+=state.answers[i];cnt[q.k]++;});
+  state.scores={};
+  [1,2,3,4,5].forEach(k=>{state.scores[k]=Math.round((sum[k]/(cnt[k]*5))*100);});
+  const overall=Math.round([1,2,3,4,5].reduce((a,k)=>a+state.scores[k],0)/5);
+
+  // ring
+  document.getElementById('ringVal').textContent=overall+'%';
+  document.getElementById('ring').style.background=`conic-gradient(var(--gold) ${overall*3.6}deg, var(--parchment-deep) 0deg)`;
+
+  // level
+  let lvl,desc;
+  if(overall>=80){lvl="Mustaqīm — Mengakar";desc="Karakter sudah menjadi kebiasaan kuat. Fokus Anda: menjaga keikhlasan dan menjadi teladan.";}
+  else if(overall>=60){lvl="Mujāhid — Berkembang";desc="Fondasi baik dan konsisten tumbuh. Kuatkan area terlemah agar merata menuju istiqamah.";}
+  else if(overall>=40){lvl="Mubtadiʾ — Merintis";desc="Kesadaran sudah ada, namun belum stabil. Bangun rutinitas kecil yang terjaga.";}
+  else{lvl="Bidāyah — Permulaan";desc="Ini titik awal yang jujur dan berharga. Mulai dari satu komitmen yang pasti ditunaikan.";}
+  document.getElementById('levelName').textContent=lvl;
+  document.getElementById('levelDesc').textContent=desc;
+
+  // bars
+  const colors={1:"#3a6ea5",2:"#2A5E54",3:"#A9761A",4:"#9c5a2b",5:"#7a3f6e"};
+  const bars=document.getElementById('bars'); bars.innerHTML='';
+  [1,2,3,4,5].forEach(k=>{
+    const s=STAGES.find(x=>x.k===k);
+    bars.insertAdjacentHTML('beforeend',`
+      <div class="bar-row">
+        <span><b style="font-family:Amiri,serif">${s.nm}</b></span>
+        <div class="bar-track"><div class="bar-fill" data-w="${state.scores[k]}" style="background:${colors[k]}"></div></div>
+        <span style="text-align:right;font-weight:700">${state.scores[k]}%</span>
+      </div>`);
+  });
+  setTimeout(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w+'%'),60);
+
+  // weak areas (lowest 2)
+  state.weak=[1,2,3,4,5].sort((a,b)=>state.scores[a]-state.scores[b]).slice(0,2);
+  renderRecs();
+  renderImplOptions();
+  renderTracker();
+  go(3);
+}
+
+function renderRecs(){
+  const el=document.getElementById('recs'); el.innerHTML='';
+  // weak first, then the rest
+  const order=[...state.weak,...[1,2,3,4,5].filter(k=>!state.weak.includes(k))];
+  order.forEach((k,idx)=>{
+    const r=REC[k], s=STAGES.find(x=>x.k===k);
+    const isWeak=state.weak.includes(k);
+    el.insertAdjacentHTML('beforeend',`
+      <div class="card rec">
+        <h3>${s.nm} <span class="small" style="font-weight:400">(${state.scores[k]}%)</span>
+          ${isWeak?'<span class="focus">Prioritas</span>':''}</h3>
+        <div class="small" style="font-weight:600;color:var(--gold)">${r.focus}</div>
+        <ul>${r.steps.map(x=>`<li>${x}</li>`).join('')}</ul>
+        <div class="muhasabah"><b>Pertanyaan muhasabah:</b> <em>${r.muhasabah}</em></div>
+      </div>`);
+  });
+}
+
+/* ---------------- IMPLEMENTATION ---------------- */
+function renderImplOptions(){
+  const el=document.getElementById('implOptions'); el.innerHTML='';
+  // prioritize weak stages, then offer all
+  const order=[...state.weak,...[1,2,3,4,5].filter(k=>!state.weak.includes(k))];
+  order.forEach(k=>{
+    const s=STAGES.find(x=>x.k===k);
+    IMPL_OPTIONS[k].forEach(opt=>{
+      const pri=state.weak.includes(k);
+      const id='opt_'+Math.random().toString(36).slice(2,8);
+      el.insertAdjacentHTML('beforeend',`
+        <label class="opt" for="${id}">
+          <input type="checkbox" id="${id}" value="${opt}" ${pri?'checked':''}>
+          <span class="ot">${opt}<small>${s.nm} · ${pri?'disarankan untuk Anda':'penguat'}</small></span>
+        </label>`);
+    });
+  });
+}
+
+function buildCommit(){
+  const checked=[...document.querySelectorAll('#implOptions input:checked')].map(c=>c.value);
+  const custom=document.getElementById('customAmal').value.trim();
+  if(custom)checked.push(custom);
+  if(checked.length===0){alert("Pilih atau tuliskan minimal satu amal untuk dikomitmenkan.");return;}
+  state.commits=checked;
+  const freq=document.getElementById('freq').value;
+  const niat=document.getElementById('niat').value.trim()||"Mengharap ridha Allah dan menumbuhkan akhlak yang mengakar.";
+  const nama=document.getElementById('nama').value.trim()||"Hamba Allah";
+  const tgl=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+
+  document.getElementById('commitWrap').innerHTML=`
+    <div class="commit-card">
+      <span class="lbl">Kartu Komitmen Istiqamah</span>
+      <h3>${nama}</h3>
+      <p style="margin:.2rem 0 .6rem;opacity:.9">Dengan menyebut nama Allah, saya berkomitmen menjalankan:</p>
+      <ul>${state.commits.map(c=>`<li>${c}</li>`).join('')}</ul>
+      <p style="margin:.8rem 0 0"><span class="lbl">Target</span><br>${freq}</p>
+      <p style="margin:.6rem 0 0"><span class="lbl">Niat</span><br><em>"${niat}"</em></p>
+      <div class="sign"><span>Ditetapkan: ${tgl}</span><span class="arabic" style="font-size:1.1rem">وَاللَّهُ الْمُسْتَعَانُ</span></div>
+    </div>
+    <div class="note" style="margin-top:12px">Gunakan tombol <b>Cetak/Simpan PDF</b> untuk menyimpan kartu ini. Amal-amal ini otomatis muncul di pelacak Istiqamah.</div>`;
+  renderTracker();
+}
+
+/* ---------------- TRACKER ---------------- */
+function renderTracker(){
+  const el=document.getElementById('tracker');
+  const habits=state.commits.length?state.commits:["(Buat kartu komitmen pada tahap Implementasi untuk mengisi pelacak)"];
+  el.innerHTML='';
+  if(!state.commits.length){
+    el.innerHTML='<p class="small">Belum ada amal yang dikomitmenkan. Kembali ke tahap <b>Implementasi</b> dan buat kartu komitmen Anda.</p>';
+    document.getElementById('overallPct').textContent='0%';
+    return;
+  }
+  const DAYS=15;
+  habits.forEach((h,hi)=>{
+    if(!state.tracker[hi])state.tracker[hi]=new Array(DAYS).fill(false);
+    let cells='';
+    for(let d=0;d<DAYS;d++){
+      cells+=`<button class="day ${state.tracker[hi][d]?'on':''}" onclick="toggleDay(${hi},${d})">${d+1}</button>`;
+    }
+    el.insertAdjacentHTML('beforeend',`
+      <div class="habit-row">
+        <div class="hn"><span>${h}</span><span class="pct" id="pct${hi}">0%</span></div>
+        <div class="days">${cells}</div>
+      </div>`);
+  });
+  updatePct();
+}
+function toggleDay(hi,d){
+  state.tracker[hi][d]=!state.tracker[hi][d];
+  renderTracker();
+}
+function updatePct(){
+  let total=0,done=0;
+  Object.keys(state.tracker).forEach(hi=>{
+    state.tracker[hi].forEach(v=>{total++;if(v)done++;});
+    const p=Math.round((state.tracker[hi].filter(Boolean).length/state.tracker[hi].length)*100);
+    const elp=document.getElementById('pct'+hi); if(elp)elp.textContent=p+'%';
+  });
+  document.getElementById('overallPct').textContent=total?Math.round(done/total*100)+'%':'0%';
+}
+
+/* ---------------- RESET ---------------- */
+function resetAll(){
+  if(!confirm("Mulai ulang seluruh modul? Jawaban yang belum dicetak akan hilang."))return;
+  state.answers={};state.scores={};state.weak=[];state.commits=[];state.tracker={};
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+  document.getElementById('customAmal').value='';
+  document.getElementById('niat').value='';
+  document.getElementById('nama').value='';
+  document.getElementById('commitWrap').innerHTML='';
+  document.querySelectorAll('.field textarea').forEach(t=>t.value='');
+  renderImplOptions(); renderTracker();
+  go(0);
+}
+
+/* ---------------- INIT ---------------- */
+renderStepper(); renderStairs(); renderStages(); renderQuestions(); renderTracker();
+</script>
+</body>
+</html>
